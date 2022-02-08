@@ -31,22 +31,26 @@ const dataFormated = data.split('\n').splice(1).map(row => {
 });
 
 
-const filterData = dataFormated.filter(worker => {
-  //Obtener fecha actual.
-  const dateNow = new Date();
-  const actualDay = dayOfYear(dateNow);
+const filterData = (startDate, finalDate) => {
+  const filteredWorkers = dataFormated.filter(worker => {
+    //Obtener fecha actual.
+    const actualDay = dayOfYear(startDate);
+    const finalDay = dayOfYear(finalDate);
 
-  //Obtener fechas de cumpleaños del trabajor
-  const dateBirthday = new Date(worker.birthday);
-  const birthdayDay = dayOfYear(dateBirthday);
+    //Obtener fechas de cumpleaños del trabajor
+    const dateBirthday = new Date(worker.birthday);
+    const birthdayDay = dayOfYear(dateBirthday);
 
-  //Diferencia entre ambas fechas
-  const dayDifference = birthdayDay - actualDay;
-  
-  //Obtener los cumpleaños de los proximos 15 días
-  if (((dayDifference >= 0) && (dayDifference <= 14)) || ((dayDifference >= -365) && (dayDifference <= -351))){
-    return worker;
-  }
-});
+    //Diferencia entre ambas fechas
+    const dayDifference = birthdayDay - actualDay;
+    const maxDifference = finalDay - actualDay;
+    
+    //Obtener los cumpleaños de los proximos 15 días
+    if (((dayDifference >= 0) && (dayDifference < maxDifference)) || ((dayDifference >= -365) && (dayDifference < (maxDifference)))){
+      return worker;
+    }
+  })
+  return filteredWorkers;
+};
 
-console.table(filterData);
+module.exports = { filterData };
